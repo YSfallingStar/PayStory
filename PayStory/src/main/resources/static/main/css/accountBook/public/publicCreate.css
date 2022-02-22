@@ -1,0 +1,111 @@
+@charset "UTF-8";
+
+.inputbox {
+    padding: 10px;
+    margin: 5px 0px 10px 50px;
+    border: solid #d1d3e2 1px;
+    border-radius: 10px;
+    width: 70%;
+}
+
+.card-header {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.container-fluid i{
+	font-family: "FontAwesome";
+}
+
+.createBox{
+	width: 90%;
+    height: 80%;
+    background-color: #fff;
+    border: solid #d1d3e2 1px;
+    border-radius: 10px;
+    margin: 20px auto;
+}
+
+h5{
+	color: #4e73df !important;
+	font-weight: 700 !important;
+	margin-top:10px;
+}
+
+.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgb(58 59 69 / 15%) !important;
+}
+
+.delbox {
+	float: left;
+}
+
+.plusbox {
+	float: left;
+}
+
+.choice{
+	align-content: center;
+    width: 40%;
+    margin: 0 auto;
+}
+
+#createPublicForm {
+    margin-top: 30px;
+}
+
+.btn1 {
+	overflow: hidden;
+    width: 80px;
+    height: 50px;
+    Text-align: center;
+    font-size: 18px;
+    padding: 0px;
+    margin: 15px;
+    border: solid #d1d3e2 1px;
+    border-radius: 10px;
+}
+
+.plusbtn:hover {
+    color: #fff;
+    background-color: #858796;
+    border-color: #858796;
+}
+
+.delbtn {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 4px;
+   
+}
+
+.delImage {
+	width: 100%;
+}
+
+.plusbtn {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 4px;
+  
+}
+
+.plusImage {
+	width: 100%;
+}
+
+.clearboth {
+	clear: both;
+}
+
+.profile {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
