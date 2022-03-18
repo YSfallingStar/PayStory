@@ -2,7 +2,8 @@ package com.AourZ.PayStory.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.AourZ.PayStory.model.FileUtils;
+import com.AourZ.PayStory.model.accountBook.ExpenditureVO;
 import com.AourZ.PayStory.service.ai.ChatbotService;
 import com.AourZ.PayStory.service.ai.OCRService;
 import com.AourZ.PayStory.service.ai.STTService;
@@ -25,15 +28,6 @@ public class AIController {
 
 	@Autowired
 	private ChatbotService chatbotService;
-
-	@Autowired
-	private OCRService ocrService;
-
-	// 챗봇 Form
-	@RequestMapping("/chatbotForm")
-	public String chatbotForm() {
-		return "chatForm";
-	}
 
 	// Speech To Text!!
 	@RequestMapping("/clovaSTT")
@@ -149,18 +143,14 @@ public class AIController {
 
 	/****** OCR *****/
 	@RequestMapping("/OCR")
-	public Map<String, String> ocrUplaod(@RequestParam("expenditureImage") MultipartFile file) throws IOException {
-		String uploadPath = "C:/upload/";
-
-		String originalFileName = file.getOriginalFilename();
-		String filePathName = uploadPath + originalFileName;
-
-		File file1 = new File(filePathName);
-
-		file.transferTo(file1);
-
-		Map<String, String> result = ocrService.clovaOCRService(filePathName);
-		// System.out.println(result);
+	public ExpenditureVO ocrUplaod(@RequestParam("receiptImage") MultipartFile file, HttpSession session) throws IOException {
+		String[] fileResult = FileUtils.uploadReceipt(file, session);
+		String filePathName = fileResult[0];
+		String uploadFileName = fileResult[1];
+		System.out.println(filePathName);
+		
+		ExpenditureVO result =  OCRService.clovaOCRService(filePathName);
+		result.setExpenditureImage(uploadFileName);
 		return result;
 	}
 }

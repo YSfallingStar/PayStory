@@ -9,17 +9,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>로그인</title>
-    <!-- Custom fonts for this template-->
+    <title>PayStory 로그인</title>
+    <!-------- CSS-------->
     <link href="/bootstrap/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-    <!-- Custom styles for this template-->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
     <link href="/bootstrap/css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="<c:url value='/main/css/join.css'/>" rel="stylesheet" type="text/css">
-    <script src="<c:url value='/main/js/jquery-3.6.0.min.js'/>"></script>
-    <%-- <script src="<c:url value='/main/js/login.js'/>"></script> --%>
+    <link href="<c:url value='/main/css/member/join.css'/>" rel="stylesheet" type="text/css">
+
 </head>
 <body class="bg-gradient-primary">
     <div class="container">
@@ -33,7 +29,7 @@
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-image"> <!-- login-image -->
+                            <div class="col-lg-6 d-none d-lg-block bg-image">
                             	<img src="<c:url value='/main/images/sideimgtest.png'/>">
                             </div>
                             <div class="col-lg-6">
@@ -50,28 +46,13 @@
                                         <div class="form-group">
                                             <input type="password" class="form-control form-control-user" name="memberPwd"
                                                 id="memberPwd" placeholder="비밀번호">
-                                        </div>                                                                
-                                        <%-- <a href="<c:url value='/'/>" class="btn btn-primary btn-user btn-block">
-                                            Login
-                                        </a>  --%>
-                                        <!-- <button class="btn btn-primary btn-user btn-block" type="button" onclick="fnSubmit(); return false;">
-		                               	 Login
-		                                </button> -->
+                                        </div>
 		                                <input class="btn btn-primary btn-user btn-block" type="submit" value="로그인"> 
                                         <hr>
-                                        <a href="<c:url value='/'/>" class="btn btn-google btn-user btn-block">
-                                             Login with Google
-                                        </a>
-                                        <a href="<c:url value='/'/>" class="btn btn-facebook btn-user btn-block">
-                                             Login with Facebook
-                                        </a>
-                                        <a href="<c:url value='/'/>" class="btn btn-naver btn-user btn-block">
-                                             Login with NAVER
-                                        </a>
                                     </form>
-                                    <hr>
                                     <div class="text-center">
-                                		<a class="small" href="<c:url value='/member/findPwView'/>">비밀번호 찾기</a>
+                                		<a class="small" href="<c:url value='/member/findPwView'/>">비밀번호 찾기</a><br>
+                                		<a class="small" href="<c:url value='/index'/>">홈 화면으로 가기</a>
                                     </div>
                                     <div class="text-center">
                                         <a class="small" href="<c:url value='/member/registerView'/>">계정이 없으신가요?&nbsp;&nbsp;회원가입으로 가기</a>
@@ -81,11 +62,8 @@
                         </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
     <!-- Bootstrap core JavaScript-->

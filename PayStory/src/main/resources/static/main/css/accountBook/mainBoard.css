@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+.boardCategory.selected {
+	text-decoration: underline;
+}
+
+.postItem:hover {
+	color: #4e73df;
+}

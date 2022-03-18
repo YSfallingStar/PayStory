@@ -3,18 +3,31 @@
 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- <mapper namespace="memberMapper"> -->
  <mapper namespace="com.AourZ.PayStory.dao.IMemberDAO">
-	<resultMap type="com.AourZ.PayStory.model.MemberVO" id="MemberVOResultMap">
+	<resultMap type="com.AourZ.PayStory.model.member.MemberVO" id="MemberVOResultMap">
 		<result property="memberNo" column="memberNo" />
 		<result property="memberName" column="memberName" />
 		<result property="memberEmail" column="memberEmail" />
 		<result property="memberPwd" column="memberPwd" />
 		<result property="memberImage" column="memberImage" />
+		<result property="memberJoinDate" column="memberJoinDate" />
+		<result property="memberRank" column="memberRank" />
+		<result property="memberSanctionTime" column="memberSanctionTime" />
+	</resultMap>
+	
+	<resultMap type="com.AourZ.PayStory.model.board.BoardVO" id="BoardVOResultMap">
+		<result column="boardNo" property="boardNo"/>
+		<result column="boardTitle" property="boardTitle"/>
+		<result column="boardDate" property="boardDate"/>
+		<result column="boardViews" property="boardViews"/>
+		<result column="boardContents" property="boardContents"/>
+		<result column="boardFile" property="boardFile"/>
+		<result column="memberNo" property="memberNo"/>
+		<result column="boardCategoryNo" property="boardCategoryNo"/>
 	</resultMap>	
 	
 	<!-- 회원가입 -->
-	<insert id="register" parameterType="com.AourZ.PayStory.model.MemberVO">
+	<insert id="register" parameterType="com.AourZ.PayStory.model.member.MemberVO">
 		INSERT INTO member(
 			memberNo,
 			memberName,
@@ -29,7 +42,7 @@
 	</insert>	
 	
 	<!-- 닉네임중복 -->
-	<select id="nameCnt" parameterType="com.AourZ.PayStory.model.MemberVO" resultType="java.lang.Integer">
+	<select id="nameCnt" parameterType="com.AourZ.PayStory.model.member.MemberVO" resultType="java.lang.Integer">
 		<![CDATA[
 			select
 				count(*)
@@ -37,6 +50,17 @@
 				member
 			where
 				memberName = #{memberName}
+		]]>	
+	</select> 
+	
+	<select id="emailCnt" parameterType="com.AourZ.PayStory.model.member.MemberVO" resultType="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*)
+			from
+				member
+			where
+				memberEmail = #{memberEmail}
 		]]>	
 	</select> 
 	
@@ -67,8 +91,8 @@
 	</select>
 	
 	<!-- 프로필수정 -->
-	<update id="infoUpdate">
-		update member set memberName = #{memberName}
+	<update id="infoUpdate" parameterType="com.AourZ.PayStory.model.member.MemberVO">
+		update member set memberName = #{memberName} where memberEmail = #{memberEmail}
 	</update>
 	
 	<select id="pwCheck" resultType="String">
@@ -78,5 +102,73 @@
 	<update id="pwUpdate">
 		update member set memberPwd = #{memberPwd} where memberEmail = #{memberEmail}
 	</update>
+	
+	<!-- 프로필사진 -->
+	<update id="updateImg">
+		update member set memberImage = #{memberImage} where memberEmail = #{memberEmail}
+	</update>
+	
+	<!-- 회원탈퇴 -->
+	<delete id="memberDelete">
+		delete from member where memberEmail = #{memberEmail}
+	</delete>
+	
+	<!-- ********관리자******* -->
+	
+	<!--  회원정지 -->
+	<update id="memberSanction">
+		<![CDATA[
+		update member set memberRank = 2 , memberSanctionTime = DATE_ADD(NOW(),INTERVAL #{sanctionTime} day) 
+		where memberEmail = #{memberEmail}
+		]]>
+	</update>	
 
+	<!-- 정지해제 -->
+	<update id="memberSanctionCancel">
+		update member set memberRank = 1, memberSanctionTime = NULL where memberEmail = #{memberEmail}
+	</update>
+	
+	<!-- 정지된 회원인지 확인 -->
+	<select id="memberRankCheck" resultType="int">
+		<![CDATA[
+			select count(*) 
+			from member 
+			where memberEmail = #{memberEmail} AND memberRank = 2 AND memberSanctionTime > now() 
+		]]>
+	</select>
+	
+	<!-- 정지기간 확인 -->
+	<select id="memberSanctionTime" resultType="date">
+		select memberSanctionTime from member where memberEmail = #{memberEmail}
+	</select>
+		
+	<!-- 전체 회원 -->
+	<select id="memberList" resultMap="MemberVOResultMap">
+		SELECT * FROM member ORDER BY memberNo
+	</select>  
+	
+	<!-- 관리자 지정 -->
+	<update id="memberMaster">
+		update member SET memberRank = 3 where memberEmail = #{memberEmail}
+	</update>
+	
+	<update id="memberMasterCancel">
+		update member SET memberRank = 1 where memberEmail = #{memberEmail}
+	</update>
+	
+	<!-- 공지사항 지정-->
+	<update id="insertNotice">
+		update board SET NOTICE ='Y' where boardNo = #{boardNo}
+	</update>
+	
+	<update id="deleteNotice">
+		update board SET NOTICE ='N' where boardNo = #{boardNo}
+	</update>
+	
+	<!-- 공지사항 목록 -->	
+	<select id="noticeBoardList" resultMap="BoardVOResultMap" >		
+		select * from board where notice = 'Y' 
+		limit 0,2
+	</select>
+		
 </mapper>

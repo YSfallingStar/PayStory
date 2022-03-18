@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.AourZ.PayStory.dao.IAccountBookDAO">
+	<!-- ─────────────────────────── resultMap ─────────────────────────── -->
+	<!-- 공유 가계부 -->
+	<resultMap type="com.AourZ.PayStory.model.accountBook.ShareAccountBookVO" id="shareMemberList">
+		<result property="owner" column="owner" />
+		<result property="participant" column="participant" />
+		<result property="accountBookNo" column="accountBookNo" />
+	</resultMap>
+	
+	<!-- 수입 -->
+	<resultMap type="com.AourZ.PayStory.model.accountBook.IncomeVO" id="incomeList">
+		<result property="incomeNo" column="incomeNo" />
+		<result property="incomeDate" column="incomeDate" />
+		<result property="incomeSource" column="incomeSource" />
+		<result property="incomeMemo" column="incomeMemo" />
+		<result property="incomeAmount" column="incomeAmount" />
+		<result property="tagNo" column="tagNo" />
+		<result property="accountBookNo" column="accountBookNo" />
+	</resultMap>
+	
+	<!-- 지출 -->
+	<resultMap type="com.AourZ.PayStory.model.accountBook.ExpenditureVO" id="expenditureList">
+		<result property="expenditureNo" column="expenditureNo" />
+		<result property="expenditureDate" column="expenditureDate" />
+		<result property="expenditureImage" column="expenditureImage" />
+		<result property="expenditureSource" column="expenditureSource" />
+		<result property="expenditureMemo" column="expenditureMemo" />
+		<result property="expenditureAddress" column="expenditureAddress" />
+		<result property="expenditureAmount" column="expenditureAmount" />
+		<result property="tagNo" column="tagNo" />
+		<result property="accountBookNo" column="accountBookNo" />
+	</resultMap>
+	
+	<!-- 지출 상세 항목 -->
+	<resultMap type="com.AourZ.PayStory.model.accountBook.ExpenditureItemVO" id="expenditureItemList">
+		<result property="expenditureItemName" column="expenditureItemName" />
+		<result property="expenditureItemPrice" column="expenditureItemPrice" />
+		<result property="expenditureNo" column="expenditureNo" />
+	</resultMap>
+	
+	<!-- 태그별 총 건수, 총 금액 -->
+	<resultMap type="com.AourZ.PayStory.model.accountBook.TagTotalVO" id="tagTotalList">
+		<result property="date" column="fdate" />
+		<result property="tag" column="tagNo" />
+		<result property="count" column="count" />
+		<result property="sum" column="sum" />
+	</resultMap>
+	
+	<!-- 게시글 -->
+	<resultMap type="com.AourZ.PayStory.model.board.BoardVO" id="boardList">
+		<result property="boardNo" column="boardNo" />
+		<result property="boardTitle" column="boardTitle" />
+		<result property="boardDate" column="boardDate" />
+		<result property="boardViews" column="boardViews" />
+		<result property="boardContents" column="boardContents" />
+		<result property="boardFile" column="boardFile" />
+		<result property="memberNo" column="memberNo" />
+		<result property="boardCategoryNo" column="boardCategoryNo" />
+	</resultMap>
+	
+	<!-- 수정자 -->
+	<resultMap type="com.AourZ.PayStory.model.accountBook.EditorVO" id="editorList">
+		<result property="dataDate" column="dataDate" />
+		<result property="editDate" column="editDate" />
+		<result property="member" column="memberNo" />
+		<result property="accountBookNo" column="accountBookNo" />
+		<result property="incomeNo" column="incomeNo" />
+		<result property="expenditureNo" column="expenditureNo" />
+	</resultMap>
+	<!-- ─────────────────────────── resultMap ─────────────────────────── -->
+	
+	<!-- 일반 가계부 생성 -->
+	<insert id="createMyAccountBook" parameterType="String">
+		INSERT INTO account_book
+		(isShared, memberNo)
+		VALUES
+		(0, #{memberNo})
+	</insert>
+	
+	<!-- 일반 가계부 조회 -->
+	<select id="selectMyAccountBook" parameterType="HashMap" resultType="com.AourZ.PayStory.model.accountBook.AccountBookVO">
+		SELECT *
+		FROM account_book
+		WHERE memberNo = #{memberNo} AND isShared = #{isShared}
+	</select>
+	
+	<!-- 공유 가계부 조회 -->
+	<select id="selectShareAccountBook" parameterType="int" resultType="com.AourZ.PayStory.model.accountBook.AccountBookVO">
+		SELECT *
+		FROM account_book
+		WHERE accountBookNo = #{accountBookNo}
+	</select>
+	
+	<!-- 가계부 예산 조회 -->
+	<select id="selectAccountBookBudget" parameterType="HashMap" resultType="com.AourZ.PayStory.model.accountBook.AccountBookBudgetVO">
+		SELECT budgetAmount
+		FROM account_book_budget
+		WHERE accountBookNo = #{accountBookNo} AND DATE_FORMAT(budgetDate, '%Y-%m') = #{date}
+	</select>
+	
+	<!-- 공유 가계부 소유자, 참여자 조회 -->
+	<select id="selectShareMemberList" parameterType="int" resultMap="shareMemberList">
+		SELECT *
+		FROM share_account_book
+		WHERE accountBookNo = #{accountBookNo}
+	</select>
+	
+	<!-- 회원 정보 조회 -->
+	<select id="selectMemberInfo" parameterType="HashMap" resultType="com.AourZ.PayStory.model.member.MemberVO">
+		SELECT *
+		FROM member
+		<choose>
+			<when test="condition.equals('memberEmail')">
+				WHERE memberEmail = #{value}
+			</when>
+			<when test="condition.equals('memberNo')">
+				WHERE memberNo = #{value}
+			</when>
+		</choose>
+	</select>
+	
+	<!-- 수입 내역 조회 (단일) -->
+	<select id="selectIncome" parameterType="HashMap" resultType="com.AourZ.PayStory.model.accountBook.IncomeVO">
+		SELECT *
+		FROM income
+		WHERE accountBookNo = #{accountBookNo} AND incomeNo = #{dataNo}
+	</select>
+	
+	<!-- 지출 내역 조회 (단일) -->
+	<select id="selectExpenditure" parameterType="HashMap" resultType="com.AourZ.PayStory.model.accountBook.ExpenditureVO">
+		SELECT *
+		FROM expenditure
+		WHERE accountBookNo = #{accountBookNo} AND expenditureNo = #{dataNo}
+	</select>
+	
+	<!-- 수입 내역 조회 -->
+	<select id="selectIncomeList" parameterType="HashMap" resultMap="incomeList">
+		SELECT *
+		FROM income
+		WHERE accountBookNo = #{accountBookNo} AND incomeDate LIKE CONCAT(#{date}, '%')
+		ORDER BY incomeDate ASC
+	</select>
+	
+	<!-- 지출 내역 조회 -->
+	<select id="selectExpenditureList" parameterType="HashMap" resultMap="expenditureList">
+		SELECT *
+		FROM expenditure
+		WHERE accountBookNo = #{accountBookNo} AND expenditureDate LIKE CONCAT(#{date}, '%')
+		ORDER BY expenditureDate ASC
+	</select>
+	
+	<!-- 지출 상세 항목 조회 -->
+	<select id="selectExpenditureItem" parameterType="int" resultMap="expenditureItemList">
+		SELECT *
+		FROM expenditure_item
+		WHERE expenditureNo = #{expenditureNo}
+	</select>
+	
+	<!-- 내역 삭제 -->
+	<delete id="deleteItem" parameterType="HashMap">
+		DELETE
+		<choose>
+			<when test="condition.equals('income')">
+				FROM income
+				WHERE incomeNo = #{dataNo}
+			</when>
+			<when test="condition.equals('expenditure')">
+				FROM expenditure
+				WHERE expenditureNo = #{dataNo}
+			</when>
+		</choose>
+	</delete>
+	
+	<!-- 내역 수정 -->
+	<update id="updateItem" parameterType="HashMap">
+		<choose>
+			<when test="condition.equals('income')">
+				UPDATE income
+				SET
+					incomeDate = #{income.incomeDate},
+					incomeSource = #{income.incomeSource},
+					incomeMemo = #{income.incomeMemo},
+					incomeAmount = #{income.incomeAmount},
+					tagNo = #{income.tagNo}
+				WHERE incomeNo = #{dataNo}
+			</when>
+			<when test="condition.equals('expenditure')">
+				UPDATE expenditure
+				SET
+					expenditureDate = #{expenditureVO.expenditureDate},
+					expenditureImage = #{expenditureVO.expenditureImage},
+					expenditureSource = #{expenditureVO.expenditureSource},
+					expenditureMemo = #{expenditureVO.expenditureMemo},
+					expenditureAddress = #{expenditureVO.expenditureAddress},
+					expenditureAmount = #{expenditureVO.expenditureAmount},
+					tagNo = #{expenditureVO.tagNo}
+				WHERE expenditureNo = #{dataNo}
+			</when>
+		</choose>
+	</update>
+	
+	<!-- 지출 내역 상세 항목 삭제 -->
+	<delete id="deleteDetailItem" parameterType="int">
+		DELETE
+		FROM expenditure_item
+		WHERE expenditureNo = #{expenditureNo}
+	</delete>
+	
+	<!-- 내역 수정자 추가 -->
+	<insert id="insertEditor" parameterType="HashMap">
+		INSERT INTO editor
+		(
+			dataDate, memberNo, accountBookNo,
+			<choose>
+				<when test="condition.equals('income')">
+					incomeNo
+				</when>
+				<when test="condition.equals('expenditure')">
+					expenditureNo
+				</when>
+			</choose>
+		)
+		VALUES (#{dataDate}, #{memberNo}, #{accountBookNo}, #{dataNo})
+	</insert>
+	
+	<!-- 내역 데이터 날짜 수정 -->
+	<update id="updateDataDate" parameterType="HashMap">
+		UPDATE editor
+		SET
+			dataDate = #{dataDate}
+		<choose>
+			<when test="condition.equals('income')">
+				WHERE incomeNo = #{dataNo}
+			</when>
+			<when test="condition.equals('expenditure')">
+				WHERE expenditureNo = #{dataNo}
+			</when>
+		</choose>
+	</update>
+	
+	<!-- 내역 수정 데이터 번호 조회 -->
+	<select id="selectEditorDataNoList" parameterType="HashMap" resultType="int">
+		<choose>
+			<when test="condition.equals('income')">
+				SELECT DISTINCT incomeNo
+				FROM editor
+				WHERE accountBookNo = #{accountBookNo} AND incomeNo IS NOT NULL AND dataDate LIKE CONCAT(#{date}, '%')
+				ORDER BY incomeNo ASC
+			</when>
+			<when test="condition.equals('expenditure')">
+				SELECT DISTINCT expenditureNo
+				FROM editor
+				WHERE accountBookNo = #{accountBookNo} AND expenditureNo IS NOT NULL AND dataDate LIKE CONCAT(#{date}, '%')
+				ORDER BY expenditureNo ASC
+			</when>
+		</choose>
+	</select>
+	
+	<!-- 내역 수정자 조회 -->
+	<select id="selectEditorList" parameterType="HashMap" resultMap="editorList">
+		SELECT *
+		FROM editor
+		WHERE accountBookNo = #{accountBookNo} AND
+		<choose>
+			<when test="condition.equals('income')">
+				incomeNo = #{dataNo}
+			</when>
+			<when test="condition.equals('expenditure')">
+				expenditureNo = #{dataNo}
+			</when>
+		</choose>
+		ORDER BY editDate DESC
+	</select>
+	
+	<!-- 수입 / 지출 - 총 개수, 총 금액 조회 -->
+	<select id="selectAccountBookTotalDataList" parameterType="HashMap" resultMap="tagTotalList">
+		SELECT
+		<choose>
+			<when test="condition.equals('income')">DATE_FORMAT(incomeDate, #{dateForm}) AS fDate,</when>
+			<when test="condition.equals('expenditure')">DATE_FORMAT(expenditureDate, #{dateForm}) AS fDate,</when>
+		</choose>
+		<if test="group1.equals('tag')">tagNo,</if>
+		COUNT(*) AS count,
+		<choose>
+			<when test="condition.equals('income')">
+				SUM(incomeAmount) AS sum
+				FROM income
+			</when>
+			<when test="condition.equals('expenditure')">
+				SUM(expenditureAmount) * -1 AS sum
+				FROM expenditure
+			</when>
+		</choose>
+		WHERE accountBookNo = #{accountBookNo}
+		GROUP BY fDate
+		<if test="group1.equals('tag')">, tagNo</if>
+		HAVING fDate LIKE CONCAT(#{date}, '%')
+		ORDER BY fDate ASC
+	</select>
+	
+	<!-- 태그 번호 / 이름 조회 -->
+	<select id="selectTagInfo" parameterType="HashMap" resultType="String">
+		<choose>
+			<when test="condition.equals('no')">
+				SELECT tagNo
+				FROM tag
+				WHERE tagName = #{tag}
+			</when>
+			<when test="condition.equals('name')">
+				SELECT tagName
+				FROM tag
+				WHERE tagNo = #{tag}
+			</when>
+		</choose>
+	</select>
+	
+	<!-- 게시글 목록 조회 -->
+	<select id="selectBoardList" parameterType="HashMap" resultMap="boardList">
+		SELECT *
+		FROM board
+		<choose>
+			<when test="boardTab eq 1"> <!-- 전체 -->
+				WHERE boardCategoryNo != #{boardCategoryNo}
+			</when>
+			<when test="boardTab eq 2"> <!-- 공지사항 -->
+				WHERE boardCategoryNo = #{boardCategoryNo}
+			</when>
+		</choose>
+		ORDER BY boardDate DESC
+		LIMIT 6
+	</select>
+	
+	<!-- 게시판 카테고리 이름 조회 -->
+	<select id="selectBoardCategoryName" parameterType="String" resultType="String">
+		SELECT boardCategoryName
+		FROM board_category
+		WHERE boardCategoryNo = #{boardCategoryNo}
+	</select>
+  
+	<!-- 수입 내역 추가 -->
+	<insert id="insertIncome" parameterType="com.AourZ.PayStory.model.accountBook.IncomeVO" useGeneratedKeys="true" keyProperty="incomeNo">
+		INSERT INTO income 
+			(incomeDate, incomeSource, incomeMemo, incomeAmount, tagNo, accountBookNo) 
+		VALUES
+			(#{incomeDate}, #{incomeSource}, #{incomeMemo}, #{incomeAmount}, #{tagNo}, #{accountBookNo})
+	</insert>
+
+	<!-- 지출 내역 추가 -->
+	<insert id="insertExpenditure" parameterType="com.AourZ.PayStory.model.accountBook.ExpenditureVO" useGeneratedKeys="true" keyProperty="expenditureNo">
+		INSERT INTO expenditure 
+			(expenditureDate, expenditureImage, expenditureSource, expenditureMemo, expenditureAmount, expenditureAddress, tagNo, accountBookNo) 
+		VALUES
+			(#{expenditureDate}, #{expenditureImage}, #{expenditureSource}, #{expenditureMemo}, #{expenditureAmount}, #{expenditureAddress}, #{tagNo}, #{accountBookNo})
+	</insert>
+	
+	<!-- 지출 상세 항목 추가 -->
+	<insert id="insertExpenditureItem" parameterType="list">
+		INSERT INTO expenditure_item
+			(expenditureItemName, expenditureItemPrice, expenditureNo) 
+		VALUES
+			<foreach collection="list" item="item" separator=",">
+				(#{item.expenditureItemName}, #{item.expenditureItemPrice}, #{item.expenditureNo})
+			</foreach>
+	</insert>
+</mapper>
